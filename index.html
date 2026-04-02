@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>⚽ ماتش الخميس</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════ */
+:root{
+  --green:#00e676; --green2:#00c853; --green3:#1b5e20; --greenglow:rgba(0,230,118,.18);
+  --yellow:#ffd600; --red:#ff1744; --blue:#448aff; --orange:#ff9100;
+  --bg:#07100a; --c1:#0c160d; --c2:#101a10; --c3:#152015;
+  --brd:#1a2a1a; --brd2:#223322;
+  --txt:#dff5e0; --muted:#4e7050; --muted2:#2e4a30;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Cairo',sans-serif;
+  background:var(--bg);color:var(--txt);
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 120% 35% at 50% -2%,rgba(0,200,83,.13) 0%,transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='80' height='80' fill='none'/%3E%3Cpath d='M0 0h80M0 40h80M40 0v80M0 80h80' stroke='%2300e676' stroke-width='.3' stroke-opacity='.04'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:99px}
+
+/* ══════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════ */
+.hdr{
+  position:relative;overflow:hidden;
+  padding:22px 16px 0;text-align:center;
+}
+.hdr-field{
+  position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  width:260px;height:140px;opacity:.06;
+  border:2px solid var(--green);border-radius:10px;
+  background:
+    radial-gradient(circle at 50% 50%,transparent 24%,var(--green) 25%,var(--green) 26.5%,transparent 27.5%),
+    linear-gradient(var(--green) 1px,transparent 1px) 0 0/100% 33%,
+    linear-gradient(90deg,var(--green) 1px,transparent 1px) 0 0/33% 100%,
+    var(--green3);
+}
+.hdr-inner{position:relative;z-index:1}
+.app-logo{font-size:2rem;margin-bottom:2px;display:block;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.app-title{
+  font-family:'Oswald',sans-serif;font-size:clamp(1.7rem,6.5vw,2.6rem);
+  font-weight:700;letter-spacing:2px;
+  background:linear-gradient(135deg,#fff 0%,var(--green) 50%,var(--yellow) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 20px rgba(0,230,118,.35));
+}
+.match-meta{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  flex-wrap:wrap;margin:8px 0 14px;
+}
+.meta-pill{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:99px;
+  background:var(--c2);border:1px solid var(--brd2);
+  font-size:.75rem;font-weight:700;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+}
+.meta-pill:hover,.meta-pill.editing{border-color:var(--green);color:var(--green)}
+.meta-pill input{
+  background:none;border:none;outline:none;
+  color:var(--green);font-family:'Cairo',sans-serif;font-size:.75rem;font-weight:700;
+  width:110px;direction:rtl;
+}
+.meta-pill.day-pill input{width:70px}
+.meta-pill.time-pill input{width:50px}
+
+/* ══════════════════════════════════════════
+   FILTER TABS (top bar — view only)
+══════════════════════════════════════════ */
+.ftabs{
+  display:flex;gap:6px;padding:0 12px 12px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.ftabs::-webkit-scrollbar{display:none}
+.ftab{
+  display:flex;align-items:center;gap:5px;
+  padding:7px 14px;border-radius:10px;
+  border:1px solid var(--brd2);background:var(--c2);
+  font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;
+  color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .18s;
+  flex-shrink:0;
+}
+.ftab.active{background:var(--green);color:#000;border-color:var(--green);box-shadow:0 0 14px rgba(0,230,118,.28)}
+.ftab:hover:not(.active){border-color:var(--green);color:var(--green)}
+.ftab-count{
+  font-family:'Oswald',sans-serif;font-size:.85rem;
+  background:rgba(0,0,0,.2);border-radius:5px;padding:1px 5px;min-width:20px;text-align:center;
+}
+.ftab.active .ftab-count{background:rgba(0,0,0,.25)}
+
+/* ══════════════════════════════════════════
+   STATS ROW
+══════════════════════════════════════════ */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 12px;margin-bottom:12px}
+.stat{
+  background:var(--c1);border:1px solid var(--brd);border-radius:12px;
+  padding:11px 6px;text-align:center;position:relative;overflow:hidden;
+  cursor:pointer;transition:transform .18s;
+}
+.stat:hover{transform:translateY(-2px)}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px}
+.stat.s-c::before{background:linear-gradient(90deg,var(--green2),var(--green))}
+.stat.s-p::before{background:linear-gradient(90deg,#b8860b,var(--yellow))}
+.stat.s-all::before{background:linear-gradient(90deg,var(--muted2),var(--muted))}
+.snum{font-family:'Oswald',sans-serif;font-size:2rem;font-weight:700;line-height:1.05}
+.stat.s-c .snum{color:var(--green)}
+.stat.s-p .snum{color:var(--yellow)}
+.stat.s-all .snum{color:var(--muted)}
+.slbl{font-size:.62rem;font-weight:700;color:var(--muted);margin-top:2px}
+
+/* ══════════════════════════════════════════
+   PROGRESS — NEW DESIGN
+══════════════════════════════════════════ */
+.prog-wrap{padding:0 12px;margin-bottom:12px}
+.prog-card{background:var(--c1);border:1px solid var(--brd);border-radius:14px;padding:14px}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.prog-label{font-size:.82rem;font-weight:700}
+.prog-frac{font-family:'Oswald',sans-serif;font-size:1.05rem;color:var(--green)}
+.prog-bar-wrap{position:relative;height:10px;background:var(--brd);border-radius:99px;overflow:hidden;margin-bottom:10px}
+.prog-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green3),var(--green2),var(--green));
+  box-shadow:0 0 14px rgba(0,230,118,.4);transition:width .55s cubic-bezier(.4,0,.2,1)}
+/* player list under progress */
+.prog-list{display:flex;flex-direction:column;gap:3px}
+.prog-item{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 8px;border-radius:7px;
+  background:rgba(255,255,255,.02);
+  font-size:.78rem;font-weight:600;
+}
+.prog-item .pi-num{font-family:'Oswald',sans-serif;font-size:.72rem;color:var(--muted);min-width:16px;text-align:center}
+.prog-item .pi-name{flex:1}
+.prog-item.pi-c .pi-name{color:var(--green)}
+.prog-item.pi-p .pi-name{color:var(--yellow)}
+.prog-item.pi-e .pi-name{color:var(--muted);font-style:italic;font-weight:400}
+.prog-item .pi-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.prog-item.pi-c .pi-dot{background:var(--green)}
+.prog-item.pi-p .pi-dot{background:var(--yellow)}
+.prog-item.pi-e .pi-dot{background:var(--brd2)}
+
+/* ══════════════════════════════════════════
+   CONFIG PANELS
+══════════════════════════════════════════ */
+.cfg-row{display:flex;gap:8px;padding:0 12px;margin-bottom:10px;flex-wrap:wrap}
+.cfg-group{flex:1;min-width:0;background:var(--c1);border:1px solid var(--brd);border-radius:12px;padding:10px 11px}
+.cfg-title{font-size:.68rem;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:7px;text-transform:uppercase}
+.pill-group{display:flex;gap:4px;flex-wrap:wrap}
+.pill{
+  padding:5px 10px;border-radius:7px;border:1px solid var(--brd2);
+  background:var(--c2);color:var(--muted);
+  font-family:'Cairo',sans-serif;font-size:.73rem;font-weight:700;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.pill.on{background:var(--green);color:#000;border-color:var(--green);box-shadow:0 0 8px rgba(0,230,118,.25)}
+.pill:hover:not(.on){border-color:var(--green);color:var(--green)}
+.pill-inp{
+  width:42px;padding:5px 6px;border-radius:7px;border:1px solid var(--brd2);
+  background:var(--c2);color:var(--txt);font-family:'Cairo',sans-serif;
+  font-size:.73rem;text-align:center;outline:none;transition:border-color .15s;
+}
+.pill-inp:focus{border-color:var(--green)}
+
+/* ══════════════════════════════════════════
+   TEAMS
+══════════════════════════════════════════ */
+.teams-wrap{padding:0 12px;margin-bottom:12px}
+.teams-grid{display:grid;gap:7px}
+.team-card{background:var(--c1);border:1px solid var(--brd);border-radius:12px;overflow:hidden}
+.team-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--brd)}
+.team-num{
+  font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:700;
+  padding:2px 8px;border-radius:5px;min-width:28px;text-align:center;
+}
+.team-name-inp{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--txt);font-family:'Cairo',sans-serif;font-size:.85rem;font-weight:700;direction:rtl;
+}
+.team-cnt{font-family:'Oswald',sans-serif;font-size:.78rem;padding:2px 8px;border-radius:5px;background:rgba(255,255,255,.06);color:var(--muted)}
+.team-body{padding:8px;display:flex;flex-wrap:wrap;gap:5px;min-height:34px}
+.tchip{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 10px 4px 6px;border-radius:20px;
+  font-size:.75rem;font-weight:700;cursor:pointer;
+  transition:all .18s;border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);color:var(--txt);
+}
+.tchip:hover{opacity:.8}
+.chip-x{opacity:.5;cursor:pointer;font-size:.8rem;transition:opacity .15s}
+.tchip:hover .chip-x{opacity:1}
+.unasn-bar{
+  margin-top:7px;background:var(--c2);border:1px solid var(--brd);border-radius:10px;padding:8px 10px;
+}
+.unasn-lbl{font-size:.68rem;color:var(--muted);font-weight:700;margin-bottom:5px}
+.achip{
+  display:inline-flex;align-items:center;margin:2px;
+  padding:4px 10px;border-radius:20px;
+  background:var(--c2);border:1px solid var(--brd2);
+  font-size:.72rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .18s;
+}
+.achip:hover{border-color:var(--green);color:var(--green)}
+
+/* ══════════════════════════════════════════
+   SHARE / EXPORT
+══════════════════════════════════════════ */
+.share-bar{display:flex;gap:6px;padding:0 12px;margin-bottom:12px}
+.sbtn{
+  flex:1;padding:11px 8px;border-radius:10px;border:none;
+  font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.sbtn-wa{background:rgba(37,211,102,.15);color:#25d366;border:1px solid rgba(37,211,102,.3)}
+.sbtn-wa:hover{background:rgba(37,211,102,.28)}
+.sbtn-cp{background:var(--c2);color:var(--muted);border:1px solid var(--brd2)}
+.sbtn-cp:hover{border-color:var(--green);color:var(--green)}
+.sbtn-adm{background:rgba(255,214,0,.1);color:var(--yellow);border:1px solid rgba(255,214,0,.2)}
+.sbtn-adm:hover{background:rgba(255,214,0,.2)}
+
+/* ══════════════════════════════════════════
+   PLAYERS LIST
+══════════════════════════════════════════ */
+.list-wrap{padding:0 12px;margin-bottom:10px}
+.list-section{background:var(--c1);border:1px solid var(--brd);border-radius:14px;overflow:hidden;margin-bottom:8px}
+.ls-hdr{
+  display:flex;align-items:center;gap:9px;padding:11px 13px;
+  cursor:pointer;user-select:none;transition:background .15s;
+  border-right:3px solid transparent;
+}
+.ls-hdr:hover{background:rgba(255,255,255,.015)}
+.ls-conf .ls-hdr{border-right-color:var(--green)}
+.ls-pool .ls-hdr{border-right-color:var(--muted)}
+.ls-icon{font-size:.95rem}
+.ls-title{font-family:'Oswald',sans-serif;font-size:.9rem;letter-spacing:.5px;flex:1}
+.ls-conf .ls-title{color:var(--green)}
+.ls-pool .ls-title{color:#7a9f7a}
+.ls-badge{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:99px}
+.ls-conf .ls-badge{background:rgba(0,230,118,.12);color:var(--green)}
+.ls-pool .ls-badge{background:rgba(80,112,80,.15);color:var(--muted)}
+.ls-chv{color:var(--muted);transition:transform .25s;font-size:.72rem}
+.list-section.closed .ls-chv{transform:rotate(-90deg)}
+.list-section.closed .ls-body{display:none}
+.ls-body{padding:8px 10px 10px}
+
+/* player row */
+.prow{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:9px;
+  border:1px solid transparent;background:var(--c2);
+  margin-bottom:5px;position:relative;overflow:hidden;
+  transition:all .18s;
+}
+.prow:last-child{margin-bottom:0}
+.prow::after{content:'';position:absolute;right:0;top:0;bottom:0;width:3px;border-radius:0 3px 3px 0;background:transparent}
+.prow.confirmed::after{background:var(--green)}
+.prow.pending::after{background:var(--yellow)}
+.prow:hover{border-color:var(--brd2);transform:translateX(-2px)}
+/* pinned */
+.prow.pinned{border-color:rgba(255,214,0,.2)}
+.prow.pinned .pin-ico{opacity:1}
+.pin-ico{opacity:0;font-size:.7rem;transition:opacity .15s}
+
+/* readonly mode — disable click effect */
+body.view-mode .prow{cursor:default;pointer-events:none}
+body.view-mode .prow:hover{transform:none;border-color:transparent}
+
+.pnum{font-family:'Oswald',sans-serif;font-size:.8rem;color:var(--muted);min-width:18px;text-align:center}
+.pname-wrap{flex:1;min-width:0}
+.pname{font-size:.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow.pempty .pname{color:var(--muted);font-weight:400;font-style:italic}
+.psub{font-size:.65rem;color:var(--muted);margin-top:1px}
+.pacts{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.wa-link{
+  display:flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:7px;
+  background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.25);
+  color:#25d366;font-size:.8rem;text-decoration:none;flex-shrink:0;transition:all .18s;
+}
+.wa-link:hover{background:rgba(37,211,102,.28);transform:scale(1.08)}
+.wa-add{
+  display:flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:7px;
+  background:rgba(255,255,255,.04);border:1px dashed var(--brd2);
+  color:var(--muted);font-size:.85rem;cursor:pointer;flex-shrink:0;transition:all .18s;
+}
+body.admin-mode .wa-add{pointer-events:auto}
+.wa-add:hover{border-color:var(--green);color:var(--green)}
+.pbadge{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.b-conf{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.25)}
+.b-pend{background:rgba(255,214,0,.1);color:var(--yellow);border:1px solid rgba(255,214,0,.2)}
+.b-empty{background:rgba(255,255,255,.04);color:var(--muted);border:1px dashed var(--brd2)}
+.b-pool{background:rgba(80,112,80,.12);color:#7a9f7a;border:1px solid rgba(80,112,80,.2)}
+
+/* ══════════════════════════════════════════
+   ADMIN BANNER
+══════════════════════════════════════════ */
+.admin-banner{
+  display:none;
+  margin:0 12px 10px;padding:9px 13px;
+  background:rgba(255,214,0,.08);border:1px solid rgba(255,214,0,.25);
+  border-radius:10px;font-size:.75rem;font-weight:700;color:var(--yellow);
+  align-items:center;gap:8px;
+}
+.admin-banner.show{display:flex}
+.admin-banner span{flex:1}
+.admin-exit{
+  padding:3px 10px;border-radius:6px;border:1px solid rgba(255,214,0,.3);
+  background:rgba(255,214,0,.08);color:var(--yellow);font-family:'Cairo',sans-serif;
+  font-size:.7rem;font-weight:700;cursor:pointer;transition:all .18s;
+}
+.admin-exit:hover{background:rgba(255,214,0,.18)}
+
+/* ══════════════════════════════════════════
+   OVERLAYS / MODALS
+══════════════════════════════════════════ */
+.ov{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.78);backdrop-filter:blur(7px);
+  z-index:300;align-items:flex-end;justify-content:center;
+}
+.ov.open{display:flex}
+.modal{
+  background:var(--c1);border:1px solid var(--brd2);
+  border-radius:22px 22px 0 0;
+  padding:18px 16px 28px;width:100%;max-width:430px;
+  animation:slideUp .22s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.mpill{width:36px;height:4px;background:var(--brd2);border-radius:99px;margin:0 auto 14px}
+.mtit{font-family:'Oswald',sans-serif;font-size:1.05rem;letter-spacing:.5px;color:var(--green);text-align:center;margin-bottom:14px}
+.minp{
+  width:100%;background:var(--c2);border:1px solid var(--brd2);border-radius:10px;
+  padding:10px 12px;color:var(--txt);font-family:'Cairo',sans-serif;font-size:.87rem;
+  outline:none;margin-bottom:8px;direction:rtl;transition:border-color .18s;
+}
+.minp:focus{border-color:var(--green)}
+.wa-field-row{display:flex;gap:7px;align-items:center;margin-bottom:10px}
+.wa-field-row .wa-label{font-size:.72rem;color:var(--muted);white-space:nowrap;direction:ltr;font-weight:700}
+.wa-field-row .minp{margin:0;flex:1;direction:ltr}
+.olist{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;max-height:250px;overflow-y:auto}
+.opt{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:10px;border:1px solid var(--brd);
+  background:var(--c2);color:var(--txt);font-family:'Cairo',sans-serif;
+  font-size:.85rem;font-weight:600;cursor:pointer;text-align:right;transition:all .18s;
+}
+.opt:hover{border-color:var(--green);background:rgba(0,230,118,.06)}
+.opt.dng:hover{border-color:var(--red);background:rgba(255,23,68,.06);color:var(--red)}
+.opt.wrn:hover{border-color:var(--yellow);background:rgba(255,214,0,.06)}
+.opt.pin-opt:hover{border-color:var(--yellow);background:rgba(255,214,0,.06);color:var(--yellow)}
+.oico{font-size:.95rem;min-width:20px;text-align:center}
+.brow{display:flex;gap:7px;margin-top:4px}
+.btn{flex:1;padding:11px;border-radius:10px;border:none;font-family:'Cairo',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-g{background:var(--green);color:#000}.btn-g:hover{background:var(--green2)}
+.btn-x{background:var(--c2);color:var(--muted);border:1px solid var(--brd2)}.btn-x:hover{background:var(--brd)}
+
+/* pool list in add-modal */
+.pool-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 11px;border-radius:9px;border:1px solid var(--brd);
+  background:var(--c2);margin-bottom:4px;cursor:pointer;transition:all .18s;
+}
+.pool-item:hover{border-color:var(--green);background:rgba(0,230,118,.05)}
+.pool-item .pi-lbl{flex:1;font-size:.83rem;font-weight:600}
+.pool-item .pi-badge{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:99px}
+.pool-item .pi-pin-btn{font-size:.75rem;padding:3px 7px;border-radius:6px;border:1px solid var(--brd2);background:transparent;color:var(--muted);cursor:pointer;font-family:'Cairo',sans-serif;transition:all .15s}
+.pool-item .pi-pin-btn:hover{border-color:var(--yellow);color:var(--yellow)}
+.pool-item .pi-pin-btn.pinned-btn{border-color:var(--yellow);color:var(--yellow);background:rgba(255,214,0,.08)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--green);color:#000;
+  padding:9px 22px;border-radius:99px;
+  font-size:.82rem;font-weight:700;
+  opacity:0;transition:all .28s;z-index:999;pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ══════════════════════════════════════════
+   WHATSAPP PREVIEW MODAL
+══════════════════════════════════════════ */
+.wa-preview-box{
+  background:#0d1e12;border:1px solid var(--brd2);border-radius:10px;
+  padding:14px;font-family:'Cairo',sans-serif;font-size:.8rem;line-height:1.7;
+  color:var(--txt);direction:rtl;white-space:pre-wrap;word-break:break-word;
+  max-height:55vh;overflow-y:auto;margin-bottom:10px;
+}
+</style>
+</head>
+<body class="view-mode">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-field"></div>
+  <div class="hdr-inner">
+    <span class="app-logo">⚽</span>
+    <div class="app-title">ماتش</div>
+    <div class="match-meta" id="match-meta">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN BANNER -->
+<div class="admin-banner" id="admin-banner">
+  <span>🔑 وضع الإدارة — يمكنك التعديل الآن</span>
+  <button class="admin-exit" onclick="exitAdmin()">خروج</button>
+</div>
+
+<!-- FILTER TABS -->
+<div class="ftabs">
+  <div class="ftab active" data-filter="all" onclick="setFilter('all',this)">
+    <span>👥 الكل</span><span class="ftab-count" id="fc-all">0</span>
+  </div>
+  <div class="ftab" data-filter="confirmed" onclick="setFilter('confirmed',this)">
+    <span>✅ جاي أكيد</span><span class="ftab-count" id="fc-conf">0</span>
+  </div>
+  <div class="ftab" data-filter="pending" onclick="setFilter('pending',this)">
+    <span>⏳ لسه مردش</span><span class="ftab-count" id="fc-pend">0</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row" id="stats-row"></div>
+
+<!-- PROGRESS -->
+<div class="prog-wrap" id="prog-wrap"></div>
+
+<!-- CONFIG — only visible in admin mode -->
+<div id="admin-controls" style="display:none">
+  <div class="cfg-row">
+    <div class="cfg-group">
+      <div class="cfg-title">عدد اللاعبين</div>
+      <div class="pill-group">
+        <button class="pill" onclick="setN(10,this)">10</button>
+        <button class="pill on" onclick="setN(12,this)">12</button>
+        <button class="pill" onclick="setN(14,this)">14</button>
+        <button class="pill" id="cpill" onclick="toggleCN(this)">custom</button>
+        <input type="number" class="pill-inp" id="cn-inp" min="2" max="40" placeholder="—" style="display:none" onchange="applyN(+this.value)">
+      </div>
+    </div>
+    <div class="cfg-group">
+      <div class="cfg-title">الفرق</div>
+      <div class="pill-group">
+        <button class="pill on" onclick="setTM(2,this)">2</button>
+        <button class="pill" onclick="setTM(3,this)">3</button>
+        <button class="pill" onclick="setTM(4,this)">4</button>
+        <button class="pill" id="ctpill" onclick="setTM('c',this)">custom</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAMS -->
+<div class="teams-wrap" id="teams-wrap"></div>
+
+<!-- SHARE BAR -->
+<div class="share-bar">
+  <button class="sbtn sbtn-wa" onclick="openWAPreview()">📤 واتساب</button>
+  <button class="sbtn sbtn-cp" onclick="copyStatus()">📋 نسخ</button>
+  <button class="sbtn sbtn-wa" onclick="openQuickAddPlayer()">➕ إضافة لاعب</button>
+  <button class="sbtn sbtn-adm" onclick="promptAdmin()">🔑</button>
+</div>
+
+<!-- PLAYERS LIST -->
+<div class="list-wrap" id="list-wrap"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══ MODAL: Add to slot ═══ -->
+<div class="ov" id="ov-add">
+  <div class="modal">
+    <div class="mpill"></div>
+    <div class="mtit" id="ov-add-t">إضافة لاعب</div>
+    <input class="minp" id="inp-n" placeholder="اسم اللاعب..." onkeydown="if(event.key==='Enter')confirmAdd()" />
+    <div class="wa-field-row">
+      <span class="wa-label">💬 واتساب:</span>
+      <input class="minp" id="inp-w" placeholder="201XXXXXXXXX" style="direction:ltr" />
+    </div>
+    <div id="addlist" class="olist" style="margin-bottom:10px"></div>
+    <div class="brow">
+      <button class="btn btn-g" onclick="confirmAdd()">✅ إضافة</button>
+      <button class="btn btn-x" onclick="closeAll()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Quick add player ═══ -->
+<div class="ov" id="ov-quick-add">
+  <div class="modal">
+    <div class="mpill"></div>
+    <div class="mtit">➕ إضافة لاعب</div>
+    <input class="minp" id="inp-qn" placeholder="اسم اللاعب..." onkeydown="if(event.key==='Enter')confirmQuickAddPlayer()" />
+    <div class="wa-field-row">
+      <span class="wa-label">💬 واتساب:</span>
+      <input class="minp" id="inp-qw" placeholder="201XXXXXXXXX" style="direction:ltr" />
+    </div>
+    <select class="minp" id="inp-qlist">
+      <option value="slot">القائمة الرئيسية</option>
+      <option value="pool">المتاحون والبدائل</option>
+    </select>
+    <div class="brow">
+      <button class="btn btn-g" onclick="confirmQuickAddPlayer()">✅ إضافة</button>
+      <button class="btn btn-x" onclick="closeAll()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Player actions ═══ -->
+<div class="ov" id="ov-p">
+  <div class="modal">
+    <div class="mpill"></div>
+    <div class="mtit" id="ov-p-t"></div>
+    <div class="wa-field-row" id="ov-wa-row">
+      <span class="wa-label">💬 واتساب:</span>
+      <input class="minp" id="ov-w" placeholder="201XXXXXXXXX" style="direction:ltr" onchange="saveWa()" />
+    </div>
+    <div class="olist">
+      <div class="opt" onclick="setSt('confirmed')"><span class="oico">✅</span>هيجي — مؤكد</div>
+      <div class="opt" onclick="setSt('pending')"><span class="oico">⏳</span>مردش عليا — معلق</div>
+      <div class="opt pin-opt" id="opt-pin" onclick="togglePin()"><span class="oico">📌</span>تثبيت في أعلى القائمة</div>
+      <div class="opt wrn" onclick="openRename()"><span class="oico">✏️</span>تعديل الاسم</div>
+      <div class="opt dng" onclick="rmSlot()"><span class="oico">❌</span>إزالة من القائمة</div>
+    </div>
+    <button class="btn btn-x" onclick="closeAll()" style="width:100%">إلغاء</button>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Rename ═══ -->
+<div class="ov" id="ov-rn">
+  <div class="modal">
+    <div class="mpill"></div>
+    <div class="mtit">✏️ تعديل الاسم</div>
+    <input class="minp" id="inp-rn" placeholder="الاسم الجديد..." onkeydown="if(event.key==='Enter')confirmRename()" />
+    <div class="brow">
+      <button class="btn btn-g" onclick="confirmRename()">حفظ</button>
+      <button class="btn btn-x" onclick="closeAll()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Pool player actions ═══ -->
+<div class="ov" id="ov-pool">
+  <div class="modal">
+    <div class="mpill"></div>
+    <div class="mtit" id="ov-pool-t"></div>
+    <div class="wa-field-row">
+      <span class="wa-label">💬 واتساب:</span>
+      <input class="minp" id="ov-pw" placeholder="201XXXXXXXXX" style="direction:ltr" onchange="savePoolWa()" />
+    </div>
+    <div class="olist" id="ov-pool-opts"></div>
+    <button class="btn btn-x" onclick="closeAll()" style="width:100%">إلغاء</button>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Team assign ═══ -->
+<div class="ov" id="ov-team">
+  <div class="modal">
+    <div class="mpill"></div>
+    <div class="mtit" id="ov-team-t">اختر الفريق</div>
+    <div class="olist" id="ov-team-opts"></div>
+    <button class="btn btn-x" onclick="closeAll()" style="width:100%">إلغاء</button>
+  </div>
+</div>
+
+<!-- ═══ MODAL: WA Preview ═══ -->
+<div class="ov" id="ov-wa">
+  <div class="modal">
+    <div class="mpill"></div>
+    <div class="mtit">📤 معاينة رسالة الواتساب</div>
+    <div class="wa-preview-box" id="wa-preview-box"></div>
+    <div class="brow">
+      <button class="btn btn-g" onclick="doShareWA()">📤 إرسال واتساب</button>
+      <button class="btn btn-x" onclick="copyFromPreview()">📋 نسخ</button>
+    </div>
+    <button class="btn btn-x" onclick="closeAll()" style="width:100%;margin-top:6px">إغلاق</button>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Admin PIN ═══ -->
+<div class="ov" id="ov-admin">
+  <div class="modal">
+    <div class="mpill"></div>
+    <div class="mtit">🔑 وضع الإدارة</div>
+    <p style="text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:12px">أدخل كلمة السر لتفعيل وضع التعديل</p>
+    <input class="minp" id="inp-pin" type="password" placeholder="كلمة السر..." onkeydown="if(event.key==='Enter')checkPin()" style="text-align:center;letter-spacing:4px" />
+    <div class="brow">
+      <button class="btn btn-g" onclick="checkPin()">دخول</button>
+      <button class="btn btn-x" onclick="closeAll()">إلغاء</button>
+    </div>
+      </div>
+</div>
+
+<!-- ═══ MODAL: Add WA number ═══ -->
+<div class="ov" id="ov-wa-add">
+  <div class="modal">
+    <div class="mpill"></div>
+    <div class="mtit" id="ov-wa-add-t">إضافة رقم واتساب</div>
+    <div class="wa-field-row">
+      <span class="wa-label">💬 واتساب:</span>
+      <input class="minp" id="inp-wa-q" placeholder="201XXXXXXXXX" style="direction:ltr" onkeydown="if(event.key==='Enter')saveWaQuick()" />
+    </div>
+    <div class="brow">
+      <button class="btn btn-g" onclick="saveWaQuick()">حفظ</button>
+      <button class="btn btn-x" onclick="closeAll()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════
+const ADMIN_PIN = 'حازم1234';
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let S = {
+  meta: { day: 'الخميس', time: '6:30م', venue: 'فيلا بارك' },
+  n: 12,
+  slots: [
+    { name: 'حازم نصير',      status: 'confirmed', wa: '', pinned: false },
+    { name: 'زياد القاضي',    status: 'confirmed', wa: '', pinned: false },
+    { name: 'محمد هرجيله',    status: 'confirmed', wa: '', pinned: false },
+    { name: 'مصطفي الخولي',   status: 'confirmed', wa: '', pinned: false },
+    { name: 'حسن المراكبي',   status: 'confirmed', wa: '', pinned: false },
+    null, null, null, null, null, null, null
+  ],
+  pool: [
+    { name: 'عبدالغني',       wa: '', pinned: true  },
+    { name: 'يوسف الحوشي',    wa: '', pinned: false },
+    { name: 'يوسف ابو هبل',   wa: '', pinned: false },
+    { name: 'السيد حدوه',     wa: '', pinned: false },
+    { name: 'محمود ابو العلا', wa: '', pinned: false },
+    { name: 'أبو دشيش',       wa: '', pinned: false },
+    { name: 'معاذ كسبر',      wa: '', pinned: false },
+    { name: 'زياد كسبر',      wa: '', pinned: false },
+    { name: 'عبدو مرعي',      wa: '', pinned: false },
+    { name: 'زياد داوود',     wa: '', pinned: false },
+    // الهدف مدمجين هنا
+    { name: 'ابراهيم شنوده',  wa: '', pinned: false },
+    { name: 'محمد جاد',       wa: '', pinned: false },
+    { name: 'سليمان',         wa: '', pinned: false },
+    { name: 'احمد درغام',     wa: '', pinned: false },
+  ],
+  tm: 2,
+  teams: [
+    { name: 'الفريق الأول', players: [] },
+    { name: 'الفريق الثاني', players: [] },
+  ],
+  filter: 'all',
+  isAdmin: false,
+};
+
+function save() { try { localStorage.setItem('match_v4', JSON.stringify(S)); } catch(e){} }
+function load() {
+  try {
+    const d = localStorage.getItem('match_v4');
+    if (d) {
+      const p = JSON.parse(d);
+      S = { ...S, ...p };
+      S.isAdmin = false; // never persist admin
+      while (S.slots.length < S.n) S.slots.push(null);
+      S.slots = S.slots.slice(0, S.n);
+    }
+  } catch(e) {}
+}
+load();
+
+// ═══════════════════════════════════════════════════
+//  ADMIN MODE
+// ═══════════════════════════════════════════════════
+function promptAdmin() {
+  document.getElementById('inp-pin').value = '';
+  showOv('ov-admin');
+  setTimeout(() => document.getElementById('inp-pin').focus(), 80);
+}
+function checkPin() {
+  const v = document.getElementById('inp-pin').value.trim();
+  if (v === ADMIN_PIN) {
+    S.isAdmin = true;
+    closeAll();
+    applyAdminMode();
+    toast('✅ وضع الإدارة مفعّل');
+  } else {
+    document.getElementById('inp-pin').style.borderColor = 'var(--red)';
+    setTimeout(() => document.getElementById('inp-pin').style.borderColor = '', 1000);
+    toast('❌ كلمة السر غلط');
+  }
+}
+function exitAdmin() {
+  S.isAdmin = false;
+  applyAdminMode();
+}
+function applyAdminMode() {
+  const isA = S.isAdmin;
+  document.body.classList.toggle('view-mode', !isA);
+  document.body.classList.toggle('admin-mode', isA);
+  document.getElementById('admin-banner').classList.toggle('show', isA);
+  document.getElementById('admin-controls').style.display = isA ? 'block' : 'none';
+  // wa-add buttons
+  document.querySelectorAll('.wa-add').forEach(el => {
+    el.style.display = isA ? 'flex' : 'none';
+  });
+  render();
+}
+
+// ═══════════════════════════════════════════════════
+//  FILTER
+// ═══════════════════════════════════════════════════
+let _filter = 'all';
+function setFilter(f, el) {
+  _filter = f;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+// ═══════════════════════════════════════════════════
+//  SLOT COUNT
+// ═══════════════════════════════════════════════════
+function setN(n, btn) {
+  document.querySelectorAll('.pill').forEach(b => { if (['10','12','14','custom'].includes(b.textContent)) b.classList.remove('on'); });
+  btn.classList.add('on');
+  document.getElementById('cn-inp').style.display = 'none';
+  applyN(n);
+}
+function toggleCN(btn) {
+  document.querySelectorAll('.pill').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const i = document.getElementById('cn-inp');
+  i.style.display = 'block'; i.focus();
+}
+function applyN(n) {
+  n = Math.max(2, Math.min(40, n || 12));
+  S.n = n;
+  while (S.slots.length < n) S.slots.push(null);
+  S.slots = S.slots.slice(0, n);
+  render();
+}
+
+// ═══════════════════════════════════════════════════
+//  TEAM MODE
+// ═══════════════════════════════════════════════════
+const TEAM_LABELS = ['الأول','الثاني','الثالث','الرابع','الخامس','السادس'];
+function setTM(mode, btn) {
+  document.querySelectorAll('.cfg-group:last-child .pill').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  if (mode === 'c') {
+    const v = parseInt(prompt('كم فريق؟ (2-6)', '2')) || 2;
+    mode = Math.max(2, Math.min(6, v));
+  }
+  S.tm = mode;
+  const DEFAULTS = Array.from({ length: mode }, (_, i) => ({
+    name: `الفريق ${TEAM_LABELS[i] || (i+1)}`,
+    players: S.teams[i]?.players || []
+  }));
+  S.teams = DEFAULTS;
+  cleanTeams(); render();
+}
+function cleanTeams() {
+  const names = S.slots.filter(s => s).map(s => s.name);
+  S.teams.forEach(t => { t.players = t.players.filter(p => names.includes(p)); });
+}
+
+// ═══════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════
+function render() {
+  renderMeta();
+  renderStats();
+  renderProgress();
+  renderTeams();
+  renderList();
+  updateFilterCounts();
+  save();
+}
+
+// META
+function renderMeta() {
+  const m = S.meta;
+  const editable = S.isAdmin;
+  document.getElementById('match-meta').innerHTML = `
+    <div class="meta-pill day-pill ${editable?'editing':''}">
+      📅 ${editable ? `<input value="${esc(m.day)}" onchange="S.meta.day=this.value;save()" onclick="event.stopPropagation()" />` : esc(m.day)}
+    </div>
+    <div class="meta-pill time-pill ${editable?'editing':''}">
+      🕕 ${editable ? `<input value="${esc(m.time)}" onchange="S.meta.time=this.value;save()" onclick="event.stopPropagation()" />` : esc(m.time)}
+    </div>
+    <div class="meta-pill ${editable?'editing':''}">
+      📍 ${editable ? `<input value="${esc(m.venue)}" onchange="S.meta.venue=this.value;save()" onclick="event.stopPropagation()" />` : esc(m.venue)}
+    </div>`;
+}
+
+// STATS
+function renderStats() {
+  const conf = S.slots.filter(s => s && s.status === 'confirmed').length;
+  const pend = S.slots.filter(s => s && s.status === 'pending').length;
+  const all = S.slots.filter(s => s).length;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat s-c" onclick="setFilter('confirmed',document.querySelector('[data-filter=confirmed]'))">
+      <div class="snum">${conf}</div><div class="slbl">✅ جاي أكيد</div>
+    </div>
+    <div class="stat s-p" onclick="setFilter('pending',document.querySelector('[data-filter=pending]'))">
+      <div class="snum">${pend}</div><div class="slbl">⏳ لسه مردش</div>
+    </div>
+    <div class="stat s-all" onclick="setFilter('all',document.querySelector('[data-filter=all]'))">
+      <div class="snum">${all}</div><div class="slbl">👥 كل الأرقام</div>
+    </div>`;
+}
+function updateFilterCounts() {
+  const conf = S.slots.filter(s => s && s.status === 'confirmed').length;
+  const pend = S.slots.filter(s => s && s.status === 'pending').length;
+  const all = S.slots.filter(s => s).length;
+  document.getElementById('fc-all').textContent = all;
+  document.getElementById('fc-conf').textContent = conf;
+  document.getElementById('fc-pend').textContent = pend;
+}
+
+// PROGRESS — new list design
+function renderProgress() {
+  const conf = S.slots.filter(s => s && s.status === 'confirmed').length;
+  const pct = Math.round((conf / S.n) * 100);
+
+  // filter slots for display
+  let displaySlots = S.slots.map((s, i) => ({ s, i }));
+  if (_filter === 'confirmed') displaySlots = displaySlots.filter(x => x.s && x.s.status === 'confirmed');
+  else if (_filter === 'pending') displaySlots = displaySlots.filter(x => x.s && x.s.status === 'pending');
+
+  const items = displaySlots.map(({ s, i }) => {
+    if (!s) return `<div class="prog-item pi-e"><div class="pi-dot"></div><span class="pi-num">${i+1}</span><span class="pi-name">خانة فاضية</span></div>`;
+    const cls = s.status === 'confirmed' ? 'pi-c' : 'pi-p';
+    return `<div class="prog-item ${cls}"><div class="pi-dot"></div><span class="pi-num">${i+1}</span><span class="pi-name">${esc(s.name)}</span></div>`;
+  }).join('');
+
+  document.getElementById('prog-wrap').innerHTML = `
+    <div class="prog-card">
+      <div class="prog-top">
+        <span class="prog-label">📊 اكتمال الفريق</span>
+        <span class="prog-frac">${conf} / ${S.n}</span>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
+      <div class="prog-list">${items || '<div style="color:var(--muted);font-size:.78rem;padding:4px">لا يوجد لاعبون</div>'}</div>
+    </div>`;
+}
+
+// TEAMS
+function renderTeams() {
+  cleanTeams();
+  const confirmed = S.slots.filter(s => s && s.status === 'confirmed').map(s => s.name);
+  const assigned = S.teams.flatMap(t => t.players);
+  const unassigned = confirmed.filter(n => !assigned.includes(n));
+
+  const cols = S.tm === 2 ? 'repeat(2,1fr)' : S.tm === 3 ? 'repeat(3,1fr)' : 'repeat(2,1fr)';
+
+  let h = `<div class="teams-grid" style="grid-template-columns:${cols}">`;
+  S.teams.forEach((t, ti) => {
+    h += `<div class="team-card">
+      <div class="team-hdr">
+        <span class="team-num" style="background:rgba(255,255,255,.07);">${TEAM_LABELS[ti]||ti+1}</span>
+        ${S.isAdmin
+          ? `<input class="team-name-inp" value="${esc(t.name)}" onchange="S.teams[${ti}].name=this.value;save()" />`
+          : `<span class="team-name-inp" style="pointer-events:none">${esc(t.name)}</span>`}
+        <span class="team-cnt">${t.players.length}</span>
+      </div>
+      <div class="team-body">
+        ${t.players.map(p => `
+          <div class="tchip" onclick="${S.isAdmin ? `openTeamAssign('${esc(p)}')` : ''}">
+            ${esc(p)}
+            ${S.isAdmin ? `<span class="chip-x" onclick="event.stopPropagation();unassign('${esc(p)}')">×</span>` : ''}
+          </div>`).join('')}
+        ${!t.players.length ? '<span style="color:var(--muted2);font-size:.72rem">فاضي</span>' : ''}
+      </div>
+    </div>`;
+  });
+  h += '</div>';
+
+  if (S.isAdmin && unassigned.length) {
+    h += `<div class="unasn-bar"><div class="unasn-lbl">👇 لسه ما اتقسموش (المؤكدين فقط)</div>
+      ${unassigned.map(n => `<span class="achip" onclick="openTeamAssign('${esc(n)}')">${esc(n)} +</span>`).join('')}
+    </div>`;
+  }
+
+  document.getElementById('teams-wrap').innerHTML = h;
+}
+
+// LIST
+function renderList() {
+  const poolSorted = [...S.pool].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+  // Main section
+  let mainRows = '';
+  S.slots.forEach((s, i) => {
+    if (_filter === 'confirmed' && s && s.status !== 'confirmed') return;
+    if (_filter === 'pending' && s && s.status !== 'pending') return;
+    if (_filter !== 'all' && !s) return;
+
+    if (!s) {
+      mainRows += `<div class="prow pempty" ${S.isAdmin ? `onclick="openAdd(${i})"` : ''}>
+        <span class="pnum">${i+1}</span>
+        <div class="pname-wrap"><span class="pname">خانة فاضية</span></div>
+        <span class="pbadge b-empty">+ إضافة</span>
+      </div>`;
+    } else {
+      const waBtn = s.wa
+        ? `<a class="wa-link" href="https://wa.me/${s.wa}" target="_blank" onclick="event.stopPropagation()">💬</a>`
+        : S.isAdmin ? `<div class="wa-add" title="أضف رقم واتساب" onclick="event.stopPropagation();openWaQuick('slot',${i})">+</div>` : '';
+      mainRows += `<div class="prow ${s.status}${s.pinned?' pinned':''}" ${S.isAdmin ? `onclick="openPlayer(${i})"` : ''}>
+        <span class="pnum">${i+1}</span>
+        <div class="pname-wrap">
+          <div class="pname">${esc(s.name)}</div>
+        </div>
+        <div class="pacts">
+          ${waBtn}
+          <span class="pbadge ${s.status==='confirmed'?'b-conf':'b-pend'}">${s.status==='confirmed'?'✅ هيجي':'⏳ معلق'}</span>
+        </div>
+      </div>`;
+    }
+  });
+
+  // Pool section
+  let poolRows = '';
+  if (_filter === 'all') {
+    poolSorted.forEach((p, i) => {
+      // find original index
+      const origIdx = S.pool.indexOf(p);
+      const waBtn = p.wa
+        ? `<a class="wa-link" href="https://wa.me/${p.wa}" target="_blank" onclick="event.stopPropagation()">💬</a>`
+        : S.isAdmin ? `<div class="wa-add" title="أضف رقم واتساب" onclick="event.stopPropagation();openWaQuick('pool',${origIdx})">+</div>` : '';
+      poolRows += `<div class="prow${p.pinned?' pinned':''}" ${S.isAdmin ? `onclick="openPool(${origIdx})"` : ''}>
+        <span class="pnum">${p.pinned ? '📌' : '—'}</span>
+        <div class="pname-wrap"><div class="pname">${esc(p.name)}</div></div>
+        <div class="pacts">
+          ${waBtn}
+          <span class="pbadge b-pool">${p.pinned ? '⭐ محدد' : 'متاح'}</span>
+        </div>
+      </div>`;
+    });
+  }
+
+  const confCount = S.slots.filter(s=>s&&s.status==='confirmed').length;
+  const pendCount = S.slots.filter(s=>s&&s.status==='pending').length;
+  const poolCount = S.pool.length;
+
+  let html = `
+    <div class="list-section ls-conf" id="ls-main">
+      <div class="ls-hdr" onclick="toggleSec('ls-main')">
+        <span class="ls-icon">🟩</span>
+        <span class="ls-title">القائمة الرئيسية</span>
+        <span class="ls-badge">${confCount+pendCount} / ${S.n}</span>
+        <span class="ls-chv">▾</span>
+      </div>
+      <div class="ls-body">${mainRows || '<div style="color:var(--muted);font-size:.8rem;padding:5px">لا يوجد لاعبون بهذا الفلتر</div>'}</div>
+    </div>`;
+
+  if (_filter === 'all') {
+    html += `
+    <div class="list-section ls-pool closed" id="ls-pool">
+      <div class="ls-hdr" onclick="toggleSec('ls-pool')">
+        <span class="ls-icon">👥</span>
+        <span class="ls-title">المتاحون والبدائل</span>
+        <span class="ls-badge">${poolCount}</span>
+        <span class="ls-chv">▾</span>
+      </div>
+      <div class="ls-body">${poolRows || '<div style="color:var(--muted);font-size:.8rem;padding:5px">لا يوجد</div>'}</div>
+    </div>`;
+  }
+
+  document.getElementById('list-wrap').innerHTML = html;
+}
+
+function toggleSec(id) { document.getElementById(id)?.classList.toggle('closed'); }
+
+// ═══════════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════════
+let _si = null, _pc = null, _tp = null, _wqCtx = null;
+
+function closeAll() {
+  document.querySelectorAll('.ov').forEach(o => o.classList.remove('open'));
+  _si = null; _pc = null; _tp = null; _wqCtx = null;
+}
+function showOv(id) { document.getElementById(id).classList.add('open'); }
+
+// QUICK ADD PLAYER
+function openQuickAddPlayer() {
+  if (!S.isAdmin) {
+    promptAdmin();
+    return;
+  }
+  document.getElementById('inp-qn').value = '';
+  document.getElementById('inp-qw').value = '';
+  document.getElementById('inp-qlist').value = S.slots.some(s => !s) ? 'slot' : 'pool';
+  showOv('ov-quick-add');
+  setTimeout(() => document.getElementById('inp-qn').focus(), 80);
+}
+function normalizeName(name) {
+  return String(name || '').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+function playerExists(name) {
+  const n = normalizeName(name);
+  return S.slots.some(s => s && normalizeName(s.name) === n) || S.pool.some(p => normalizeName(p.name) === n);
+}
+function confirmQuickAddPlayer() {
+  if (!S.isAdmin) return;
+  const name = document.getElementById('inp-qn').value.trim();
+  if (!name) return;
+  if (playerExists(name)) {
+    toast('⚠️ الاسم موجود بالفعل');
+    return;
+  }
+  const wa = document.getElementById('inp-qw').value.trim().replace(/\D/g,'');
+  const target = document.getElementById('inp-qlist').value;
+  if (target === 'slot') {
+    const ei = S.slots.findIndex(s => !s);
+    if (ei !== -1) {
+      S.slots[ei] = { name, status: 'pending', wa, pinned: false };
+    } else {
+      S.pool.push({ name, wa, pinned: false });
+      toast('ℹ️ القائمة الرئيسية كاملة — تم إضافته للبدائل');
+    }
+  } else {
+    S.pool.push({ name, wa, pinned: false });
+  }
+  closeAll();
+  render();
+}
+
+// ADD TO SLOT
+function openAdd(idx) {
+  if (!S.isAdmin) return;
+  _si = idx;
+  document.getElementById('ov-add-t').textContent = `إضافة للخانة ${idx+1}`;
+  document.getElementById('inp-n').value = '';
+  document.getElementById('inp-w').value = '';
+
+  const poolSorted = [...S.pool].sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0));
+
+  document.getElementById('addlist').innerHTML = poolSorted.map(p => {
+    const origIdx = S.pool.indexOf(p);
+    return `<div class="pool-item" onclick="addFromPool(${origIdx})">
+      <span class="pi-lbl">${esc(p.name)}</span>
+      ${p.wa ? `<a class="wa-link" href="https://wa.me/${p.wa}" target="_blank" onclick="event.stopPropagation()">💬</a>` : ''}
+      <span class="pi-badge b-pool" style="background:rgba(80,112,80,.12);color:#7a9f7a;border:1px solid rgba(80,112,80,.2)">${p.pinned?'⭐':'متاح'}</span>
+      ${S.isAdmin ? `<button class="pi-pin-btn ${p.pinned?'pinned-btn':''}" onclick="event.stopPropagation();togglePoolPin(${origIdx})">${p.pinned?'إلغاء التثبيت':'📌 تثبيت'}</button>` : ''}
+    </div>`;
+  }).join('');
+
+  showOv('ov-add');
+  setTimeout(() => document.getElementById('inp-n').focus(), 80);
+}
+
+function togglePoolPin(idx) {
+  S.pool[idx].pinned = !S.pool[idx].pinned;
+  // re-render pool list in modal
+  openAdd(_si);
+  save();
+}
+
+function addFromPool(idx) {
+  const p = S.pool[idx];
+  S.slots[_si] = { name: p.name, status: 'pending', wa: p.wa || '', pinned: false };
+  S.pool.splice(idx, 1);
+  closeAll(); render();
+}
+
+function confirmAdd() {
+  const name = document.getElementById('inp-n').value.trim();
+  if (!name) return;
+  const wa = document.getElementById('inp-w').value.trim().replace(/\D/g,'');
+  S.slots[_si] = { name, status: 'pending', wa, pinned: false };
+  closeAll(); render();
+}
+
+// PLAYER ACTIONS
+function openPlayer(idx) {
+  if (!S.isAdmin) return;
+  _si = idx;
+  const p = S.slots[idx];
+  document.getElementById('ov-p-t').textContent = `⚽ ${p.name}`;
+  document.getElementById('ov-w').value = p.wa || '';
+  document.getElementById('opt-pin').querySelector('.oico').textContent = p.pinned ? '📌' : '📌';
+  document.getElementById('opt-pin').childNodes[1].textContent = p.pinned ? ' إلغاء التثبيت' : ' تثبيت في أعلى القائمة';
+  showOv('ov-p');
+}
+function saveWa() {
+  if (_si === null) return;
+  S.slots[_si].wa = document.getElementById('ov-w').value.trim().replace(/\D/g,'');
+  save(); render();
+}
+function setSt(st) {
+  if (_si === null) return;
+  S.slots[_si].status = st;
+  closeAll(); render();
+}
+function togglePin() {
+  if (_si === null) return;
+  S.slots[_si].pinned = !S.slots[_si].pinned;
+  closeAll(); render();
+}
+function rmSlot() {
+  const p = S.slots[_si];
+  S.pool.push({ name: p.name, wa: p.wa || '', pinned: false });
+  S.slots[_si] = null;
+  unassign(p.name);
+  closeAll(); render();
+}
+
+// RENAME
+function openRename() {
+  document.getElementById('inp-rn').value = S.slots[_si].name;
+  showOv('ov-rn');
+  setTimeout(() => document.getElementById('inp-rn').focus(), 80);
+}
+function confirmRename() {
+  const v = document.getElementById('inp-rn').value.trim();
+  if (!v) return;
+  const old = S.slots[_si].name;
+  S.slots[_si].name = v;
+  S.teams.forEach(t => { const i = t.players.indexOf(old); if (i !== -1) t.players[i] = v; });
+  closeAll(); render();
+}
+
+// POOL PLAYER
+function openPool(idx) {
+  if (!S.isAdmin) return;
+  _pc = idx;
+  const p = S.pool[idx];
+  document.getElementById('ov-pool-t').textContent = `👤 ${p.name}`;
+  document.getElementById('ov-pw').value = p.wa || '';
+  const ei = S.slots.findIndex(s => !s);
+  let h = '';
+  if (ei !== -1) h += `<div class="opt" onclick="mvToSlot()"><span class="oico">➕</span>نقله للقائمة الرئيسية (خانة ${ei+1})</div>`;
+  else h += `<div class="opt" style="opacity:.35;pointer-events:none"><span class="oico">❌</span>مفيش خانة فاضية</div>`;
+  h += `<div class="opt pin-opt" onclick="togglePoolPinDirect()"><span class="oico">📌</span>${p.pinned ? 'إلغاء التثبيت' : 'تثبيت في أعلى القائمة'}</div>`;
+  h += `<div class="opt dng" onclick="rmPool()"><span class="oico">🗑️</span>حذف نهائي</div>`;
+  document.getElementById('ov-pool-opts').innerHTML = h;
+  showOv('ov-pool');
+}
+function savePoolWa() {
+  if (_pc === null) return;
+  S.pool[_pc].wa = document.getElementById('ov-pw').value.trim().replace(/\D/g,'');
+  save(); render();
+}
+function togglePoolPinDirect() {
+  S.pool[_pc].pinned = !S.pool[_pc].pinned;
+  closeAll(); render();
+}
+function mvToSlot() {
+  const p = S.pool[_pc];
+  const ei = S.slots.findIndex(s => !s);
+  if (ei === -1) return;
+  S.slots[ei] = { name: p.name, status: 'pending', wa: p.wa || '', pinned: false };
+  S.pool.splice(_pc, 1);
+  closeAll(); render();
+}
+function rmPool() {
+  S.pool.splice(_pc, 1);
+  closeAll(); render();
+}
+
+// WA QUICK ADD
+function openWaQuick(type, idx) {
+  if (!S.isAdmin) return;
+  _wqCtx = { type, idx };
+  const name = type === 'slot' ? S.slots[idx]?.name : S.pool[idx]?.name;
+  document.getElementById('ov-wa-add-t').textContent = `💬 ${name}`;
+  document.getElementById('inp-wa-q').value = type === 'slot' ? (S.slots[idx]?.wa || '') : (S.pool[idx]?.wa || '');
+  showOv('ov-wa-add');
+  setTimeout(() => document.getElementById('inp-wa-q').focus(), 80);
+}
+function saveWaQuick() {
+  if (!_wqCtx) return;
+  const wa = document.getElementById('inp-wa-q').value.trim().replace(/\D/g,'');
+  if (_wqCtx.type === 'slot' && S.slots[_wqCtx.idx]) S.slots[_wqCtx.idx].wa = wa;
+  else if (_wqCtx.type === 'pool' && S.pool[_wqCtx.idx]) S.pool[_wqCtx.idx].wa = wa;
+  closeAll(); render();
+}
+
+// TEAM ASSIGN
+function openTeamAssign(name) {
+  if (!S.isAdmin) return;
+  _tp = name;
+  document.getElementById('ov-team-t').textContent = `👕 ${name}`;
+  document.getElementById('ov-team-opts').innerHTML = S.teams.map((t, i) => `
+    <div class="opt" onclick="asgn(${i})">
+      <span class="oico">🎽</span>${esc(t.name)}
+      <span style="color:var(--muted);font-size:.7rem;margin-right:auto">${t.players.length} لاعبين</span>
+    </div>`).join('') +
+    `<div class="opt dng" onclick="unassign('${esc(name)}');closeAll()"><span class="oico">↩️</span>إزالة من كل الفرق</div>`;
+  showOv('ov-team');
+}
+function asgn(ti) {
+  S.teams.forEach(t => { t.players = t.players.filter(p => p !== _tp); });
+  if (!S.teams[ti].players.includes(_tp)) S.teams[ti].players.push(_tp);
+  closeAll(); render();
+}
+function unassign(name) {
+  S.teams.forEach(t => { t.players = t.players.filter(p => p !== name); });
+  render();
+}
+
+// ═══════════════════════════════════════════════════
+//  SHARE / WHATSAPP MESSAGE
+// ═══════════════════════════════════════════════════
+function buildWAMsg() {
+  const m = S.meta;
+  const conf = S.slots.filter(s => s && s.status === 'confirmed');
+  const missing = Math.max(S.n - conf.length, 0);
+
+  let msg = `⚽ *حجز ${m.day}* (${m.time} 🕕 / ملعب 📍 ${m.venue})\n`;
+  msg += `━━━━━━━━━━━━━━━━━━\n`;
+  msg += `✅ *جاي أكيد (${conf.length}/${S.n}):*\n`;
+  if (conf.length) msg += conf.map((p, i) => `${i+1}. ${p.name}`).join('\n');
+  else msg += '_لا يوجد_';
+  msg += `\n\n🔲 *ناقص: ${missing} شخص*`;
+
+  return msg;
+}
+
+function openWAPreview() {
+  const msg = buildWAMsg();
+  document.getElementById('wa-preview-box').textContent = msg;
+  showOv('ov-wa');
+}
+function doShareWA() {
+  window.open('https://wa.me/?text=' + encodeURIComponent(buildWAMsg()), '_blank');
+}
+function copyFromPreview() {
+  copyText(buildWAMsg());
+}
+function copyStatus() {
+  copyText(buildWAMsg());
+}
+function copyText(t) {
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => toast('📋 تم النسخ'));
+  else {
+    const el = document.createElement('textarea');
+    el.value = t; document.body.appendChild(el); el.select();
+    document.execCommand('copy'); document.body.removeChild(el);
+    toast('📋 تم النسخ');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+let _tt;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove('show'), 2300);
+}
+
+// Close overlay on background tap
+document.querySelectorAll('.ov').forEach(o => o.addEventListener('click', e => { if (e.target === o) closeAll(); }));
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+applyAdminMode(); // sets view-mode class
+render();
+</script>
+</body>
+</html>
